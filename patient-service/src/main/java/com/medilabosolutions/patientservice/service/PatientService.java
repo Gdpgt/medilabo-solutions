@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -21,13 +22,16 @@ public class PatientService {
             return patientRepository.save(patient);
     }
 
+
     public List<Patient> findAll() {
         return patientRepository.findAll();
     }
 
+
     public Optional<Patient> findById(Long id) {
         return patientRepository.findById(id);
     }
+
 
     public void deleteById(Long id) {
         patientRepository.deleteById(id);
