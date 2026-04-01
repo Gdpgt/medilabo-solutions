@@ -1,5 +1,6 @@
 package com.medilabosolutions.patientservice.web.advice;
 
+import com.medilabosolutions.patientservice.domain.exception.PatientNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GlobalExceptionHandler {
 
+
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<String> handleDataAccessException(DataAccessException e) {
         log.error("L'accès à la base de donnée a échoué", e);
@@ -27,8 +29,30 @@ public class GlobalExceptionHandler {
         String message = e.getBindingResult().getFieldErrors().stream()
                 .map(fe -> fe.getField() + " : " + fe.getDefaultMessage())
                 .collect(Collectors.joining(", "));
+
         log.warn("Le formulaire contient des données non valides : {}", message);
+
         return ResponseEntity.badRequest().body("Le formulaire contient des données non valides : " + message);
     }
+
+
+    @ExceptionHandler(PatientNotFoundException.class)
+    public ResponseEntity<Void> handlePatientNotFoundException(PatientNotFoundException e) {
+        log.warn("La patient à l'id {} n'existe pas en base.", e.getId());
+        return ResponseEntity.notFound().build();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
