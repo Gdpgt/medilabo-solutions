@@ -1,13 +1,13 @@
 package com.medilabosolutions.patientservice.service;
 
-import com.medilabosolutions.patientservice.model.Patient;
+import com.medilabosolutions.patientservice.domain.exception.PatientNotFoundException;
+import com.medilabosolutions.patientservice.domain.model.Patient;
 import com.medilabosolutions.patientservice.repository.PatientRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 
 @Service
@@ -18,22 +18,30 @@ public class PatientService {
     private final PatientRepository patientRepository;
 
 
-    public Patient save(Patient patient) {
+    public Patient registerPatient(Patient patient) {
             return patientRepository.save(patient);
     }
 
 
-    public List<Patient> findAll() {
+    public List<Patient> getAllPatients() {
         return patientRepository.findAll();
     }
 
 
-    public Optional<Patient> findById(Long id) {
-        return patientRepository.findById(id);
+    public Patient getPatient(Long id) {
+        return patientRepository.findById(id)
+                .orElseThrow(() -> new PatientNotFoundException(id));
     }
 
 
-    public void deleteById(Long id) {
+    public Patient updatePatient(Patient patient) {
+        return patientRepository.save(patient);
+    }
+
+
+    public void deletePatient(Long id) {
+        getPatient(id);
         patientRepository.deleteById(id);
     }
+
 }

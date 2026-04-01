@@ -1,15 +1,18 @@
-package com.medilabosolutions.patientservice.model;
+package com.medilabosolutions.patientservice.domain.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
 
 
 @Entity
 @Table(name = "patient")
-@Getter @Setter
+@Getter
+@Setter
+@Accessors(chain = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
