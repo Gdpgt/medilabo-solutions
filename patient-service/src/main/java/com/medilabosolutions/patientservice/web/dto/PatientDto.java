@@ -2,12 +2,14 @@ package com.medilabosolutions.patientservice.web.dto;
 
 import jakarta.validation.constraints.*;
 
-import com.medilabosolutions.patientservice.model.Genre;
+import com.medilabosolutions.patientservice.domain.model.Genre;
 
 import java.time.LocalDate;
 
 
 public record PatientDto(
+
+        Long id,
 
         @NotBlank(message = "Le nom est obligatoire.")
         @Size(max = 50, message = "Le nom ne doit pas dépasser 50 caractères.")
