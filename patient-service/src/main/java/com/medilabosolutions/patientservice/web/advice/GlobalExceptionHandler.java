@@ -3,8 +3,9 @@ package com.medilabosolutions.patientservice.web.advice;
 import com.medilabosolutions.patientservice.domain.exception.PatientNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -42,10 +43,27 @@ public class GlobalExceptionHandler {
         return ResponseEntity.notFound().build();
     }
 
+    
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+        String cause = e.getMostSpecificCause().getMessage();
+
+        if (cause != null && cause.contains("uk_patient_identite")) {
+            log.warn("Ce patient a déjà été enregistré : {}", e.getMessage());
+            // 409 : Conflit logique métier
+            return ResponseEntity.status(409).body("Ce patient a déjà été enregistré.");
+        }
+
+        log.warn("Les données renseignées pour ce patient ne respectent pas le format autorisé : {}", e.getMessage());
+        return ResponseEntity.badRequest().body("Les données renseignées pour ce patient ne respectent pas le format autorisé.");
+    }
 
 
-
-
+    @ExceptionHandler(OptimisticLockingFailureException.class)
+    public ResponseEntity<String> handleOptimisticLockingFailureException(OptimisticLockingFailureException e) {
+        log.warn("Ce patient a été modifié par un autre utilisateur entre temps : {}", e.getMessage());
+        return ResponseEntity.status(409).body("Ce patient a été modifié par un autre utilisateur entre temps. Rechargez et recommencez.");
+    }
 
 
 

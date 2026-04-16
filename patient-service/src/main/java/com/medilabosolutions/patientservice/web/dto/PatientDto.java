@@ -25,7 +25,7 @@ public record PatientDto(
         @NotNull(message = "La date de naissance est obligatoire.")
         LocalDate dateNaissance,
 
-        @NotNull
+        @NotNull(message = "Le genre est obligatoire.")
         Genre genre,
 
         @Size(max = 100, message = "La taille de l'adresse ne doit pas dépasser 100 caractères.")

@@ -9,7 +9,12 @@ import java.time.LocalDate;
 
 
 @Entity
-@Table(name = "patient")
+@Table(name = "patient", uniqueConstraints = {
+        @UniqueConstraint(
+                name = "uk_patient_identite",
+                columnNames = {"nom", "prenom", "date_naissance"}
+        )
+})
 @Getter
 @Setter
 @Accessors(chain = true)
@@ -24,6 +29,9 @@ public class Patient {
     @EqualsAndHashCode.Include
     @ToString.Include
     private Long id;
+
+    @Version
+    private Long version;
 
     @NotBlank(message = "Le nom est obligatoire.")
     @Size(max=50, message = "Le nom ne doit pas dépasser 50 caractères.")
@@ -42,7 +50,7 @@ public class Patient {
     private LocalDate dateNaissance;
 
     @Enumerated(EnumType.STRING)
-    @NotNull
+    @NotNull(message = "Le genre est obligatoire.")
     private Genre genre;
 
     @Size(max=100, message = "La taille de l'adresse ne doit pas dépasser 100 caractères.")
