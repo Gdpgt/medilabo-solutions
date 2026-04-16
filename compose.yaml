@@ -1,0 +1,35 @@
+services:
+  patient_service_db:
+    image: mysql:9.6
+    ports:
+      - "3307:3306"
+    env_file:
+      - env.properties
+    environment:
+      - TZ=Europe/Paris
+    volumes:
+      - patient_service:/var/lib/mysql
+      - ./patient-service/src/main/resources/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  patient_service:
+    build:
+      context: .
+      dockerfile: ./patient-service/Dockerfile
+    ports:
+      - "8082:8082"
+    env_file:
+      - env.properties
+    environment:
+      - DB_PATIENT_URL=jdbc:mysql://patient_service_db:3306/patient_service
+      - TZ=Europe/Paris
+    depends_on:
+      patient_service_db:
+        condition: service_healthy
+
+volumes:
+  patient_service:
