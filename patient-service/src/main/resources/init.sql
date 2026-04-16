@@ -4,7 +4,7 @@ CREATE TABLE patient (
      nom VARCHAR (50) NOT NULL,
      prenom VARCHAR (50) NOT NULL,
      date_naissance DATE NOT NULL,
-     genre CHAR(1) NOT NULL CHECK (genre IN ('M', 'F')),
+     genre ENUM ('M', 'F') NOT NULL,
      adresse VARCHAR (100),
      telephone VARCHAR (12),
      CONSTRAINT uk_patient_identite UNIQUE (nom, prenom, date_naissance)
