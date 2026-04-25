@@ -70,5 +70,9 @@ La mise à jour des patients utilise **PUT** (remplacement complet) plutôt que 
 Au lieu d'ajouter une vérification de l'existence du patient dans les méthodes de création de patients, ce qui impliquerait la succession de 2 requêtes SQL (SELECT puis INSERT), la contrainte d'unicité mise au niveau de la base de donnée permet à celle-ci de gérer le cas où le patient existe déjà en n'utilisant qu'une requête (INSERT). On attrape ensuite l'exception technique DataIntegrityViolation au niveau du global handler.
 
 **Mise à jour :**
-Pour la mise à jour du patient, au lieu de récupérer dans la base le patient puis d'enregistrer la version mise à jour, le tout dans le contrôleur, ce qui impliquerait la succession de 2 transactions et 3 requêtes SQL (SELECT pour la transaction 1, puis SELECT et UPDATE pour la transaction 2), on gère les 2 requêtes (SELECT puis UPDATE) via 1 seule transaction dans le service.  
+Pour la mise à jour du patient, au lieu de récupérer dans la base le patient puis d'enregistrer la version mise à jour, le tout dans le contrôleur, ce qui impliquerait la succession de 2 transactions et 3 requêtes SQL (SELECT pour la transaction 1, puis SELECT et UPDATE pour la transaction 2), on gère les 2 requêtes (SELECT puis UPDATE) via 1 seule transaction dans le service.
+
+### Optimisation des Dockerfiles
+
+Les dockerfiles ont été optimisés de sorte à mettre en cache les dépendances Maven -> moins de téléchargements réseaux à chaque modification du code source, builds plus rapides, moins d'énergie consommée.
 
