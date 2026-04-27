@@ -5,6 +5,7 @@ import jakarta.validation.constraints.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -15,6 +16,7 @@ import java.time.Instant;
 @Document(collection = "notes_praticien")
 @Getter
 @Setter
+@Accessors(chain = true)
 public class NotePraticien {
 
     @Id
@@ -25,7 +27,7 @@ public class NotePraticien {
     private Long idPatient;
 
     @NotBlank(message = "Le nom du patient est obligatoire.")
-    @Size(max = 50, message = "Le nom du patient ne peut pas dépasser 50 caractères.")
+    @Size(max = 50, message = "Le nom du patient ne doit pas dépasser 50 caractères.")
     @Pattern(regexp = "^[a-zA-ZÀ-ÿ\\-' ]+$", message = "Le nom contient des caractères non autorisés.")
     private String nomPatient;
 

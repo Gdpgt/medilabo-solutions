@@ -40,7 +40,7 @@ public class PatientService {
 
     @Transactional
     public Patient updatePatient(Long id, PatientDto dto) {
-        Patient patient = patientRepository.findById(id).orElseThrow(() -> new PatientNotFoundException(id));
+        Patient patient = getPatient(id);
         PatientMapper.updateEntity(patient, dto);
         // .save() is implicit in a transaction : dirty checking by Hibernate at the Commit
         return patient;
@@ -48,7 +48,10 @@ public class PatientService {
 
 
     public void deletePatient(Long id) {
-        getPatient(id);
+        if (!patientRepository.existsById(id)) {
+            throw new PatientNotFoundException(id);
+        }
+
         patientRepository.deleteById(id);
     }
 
