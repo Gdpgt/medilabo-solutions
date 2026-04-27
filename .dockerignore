@@ -1,25 +1,31 @@
 # Build artifacts
-  **/target/
-  **/*.class
+**/target/
+**/*.class
 
-  # IDE
-  .idea/
-  .vscode/
-  *.iml
+# IDE
+.idea/
+.vscode/
+*.iml
 
-  # Git
-  .git/
-  .gitignore
+# Git
+.git/
+.gitignore
 
-  # OS
-  .DS_Store
-  Thumbs.db
+# OS
+.DS_Store
+Thumbs.db
 
-  # Docker
-  **/Dockerfile
-  compose.yaml
-  .dockerignore
+# Docker
+**/Dockerfile
+compose.yaml
+.dockerignore
 
-  # Secrets
-  env.properties
-  *.env
+# Secrets
+env.properties
+*.env
+
+# Docs
+*.md, README*
+
+# Logs
+*.log, logs/

@@ -17,6 +17,7 @@
 
     <modules>
         <module>patient-service</module>
+        <module>note-praticien-service</module>
     </modules>
 
     <properties>
