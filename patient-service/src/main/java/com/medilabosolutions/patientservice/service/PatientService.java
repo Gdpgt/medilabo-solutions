@@ -3,8 +3,6 @@ package com.medilabosolutions.patientservice.service;
 import com.medilabosolutions.patientservice.domain.exception.PatientNotFoundException;
 import com.medilabosolutions.patientservice.domain.model.Patient;
 import com.medilabosolutions.patientservice.repository.PatientRepository;
-import com.medilabosolutions.patientservice.web.dto.PatientDto;
-import com.medilabosolutions.patientservice.web.mapper.PatientMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -39,16 +37,17 @@ public class PatientService {
 
 
     @Transactional
-    public Patient updatePatient(Long id, PatientDto dto) {
-        Patient patient = patientRepository.findById(id).orElseThrow(() -> new PatientNotFoundException(id));
-        PatientMapper.updateEntity(patient, dto);
+    public Patient updatePatient(Long id, Patient updates) {
         // .save() is implicit in a transaction : dirty checking by Hibernate at the Commit
-        return patient;
+        return getPatient(id).merge(updates);
     }
 
 
     public void deletePatient(Long id) {
-        getPatient(id);
+        if (!patientRepository.existsById(id)) {
+            throw new PatientNotFoundException(id);
+        }
+
         patientRepository.deleteById(id);
     }
 

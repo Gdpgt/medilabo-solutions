@@ -60,4 +60,14 @@ public class Patient {
     @Pattern(regexp = "^\\d{3}-\\d{3}-\\d{4}$", message = "Le téléphone doit être au format 000-000-0000.")
     private String telephone;
 
+
+    public Patient merge(Patient updates) {
+        return this.setNom(updates.getNom())
+                .setPrenom(updates.getPrenom())
+                .setDateNaissance(updates.getDateNaissance())
+                .setGenre(updates.getGenre())
+                .setAdresse(updates.getAdresse())
+                .setTelephone(updates.getTelephone());
+    }
+
 }

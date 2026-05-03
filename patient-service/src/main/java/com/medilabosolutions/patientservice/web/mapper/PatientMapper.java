@@ -20,16 +20,6 @@ public class PatientMapper {
     }
     
     
-    public static void updateEntity(Patient patient, PatientDto dto) {
-        patient.setNom(dto.nom())
-                .setPrenom(dto.prenom())
-                .setDateNaissance(dto.dateNaissance())
-                .setGenre(dto.genre())
-                .setAdresse(dto.adresse())
-                .setTelephone(dto.telephone());
-    }
-
-
     public static PatientDto toDto(Patient patient) {
         return new PatientDto(patient.getId(),
                 patient.getNom(),
