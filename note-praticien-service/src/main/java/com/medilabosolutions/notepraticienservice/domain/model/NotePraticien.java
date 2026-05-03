@@ -5,8 +5,10 @@ import jakarta.validation.constraints.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
@@ -15,17 +17,21 @@ import java.time.Instant;
 @Document(collection = "notes_praticien")
 @Getter
 @Setter
+@Accessors(chain = true)
 public class NotePraticien {
 
     @Id
     @Setter(AccessLevel.NONE)
     private String id;
 
+    @Version
+    private Long version;
+
     @NotNull(message = "L'id du patient est obligatoire.")
     private Long idPatient;
 
     @NotBlank(message = "Le nom du patient est obligatoire.")
-    @Size(max = 50, message = "Le nom du patient ne peut pas dépasser 50 caractères.")
+    @Size(max = 50, message = "Le nom du patient ne doit pas dépasser 50 caractères.")
     @Pattern(regexp = "^[a-zA-ZÀ-ÿ\\-' ]+$", message = "Le nom contient des caractères non autorisés.")
     private String nomPatient;
 
@@ -38,5 +44,12 @@ public class NotePraticien {
     @CreatedDate
     @Setter(AccessLevel.NONE)
     private Instant dateCreation;
+
+
+    public NotePraticien merge(NotePraticien updates) {
+        return this.setIdPatient(updates.getIdPatient())
+                   .setNomPatient(updates.getNomPatient())
+                   .setNote(updates.getNote());
+    }
 
 }
