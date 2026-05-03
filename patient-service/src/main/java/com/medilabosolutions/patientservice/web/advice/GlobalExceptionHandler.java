@@ -65,12 +65,4 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(409).body("Ce patient a été modifié par un autre utilisateur entre temps. Rechargez et recommencez.");
     }
 
-
-
-
-
-
-
-
-
 }

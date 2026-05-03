@@ -21,7 +21,9 @@ public class PatientService {
     // Vérification de l'existence du patient gérée au niveau de la base de donnée via contrainte.
     // Géré dans le global handler via handleDataIntegrationViolationException.
     public Patient registerPatient(Patient patient) {
-        return patientRepository.save(patient);
+        Patient saved = patientRepository.save(patient);
+        log.info("Patient enregistré id={}", saved.getId());
+        return saved;
     }
 
 
@@ -39,7 +41,9 @@ public class PatientService {
     @Transactional
     public Patient updatePatient(Long id, Patient updates) {
         // .save() is implicit in a transaction : dirty checking by Hibernate at the Commit
-        return getPatient(id).merge(updates);
+        Patient updated = getPatient(id).merge(updates);
+        log.info("Patient mis à jour id={}", id);
+        return updated;
     }
 
 
@@ -49,6 +53,7 @@ public class PatientService {
         }
 
         patientRepository.deleteById(id);
+        log.info("Patient supprimé id={}", id);
     }
 
 }
