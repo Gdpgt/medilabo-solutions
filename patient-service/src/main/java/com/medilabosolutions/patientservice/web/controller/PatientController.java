@@ -20,13 +20,13 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/patients")
 public class PatientController {
 
     private final PatientService patientService;
 
 
-    @PostMapping("/patients")
+    @PostMapping
     public ResponseEntity<PatientDto> registerPatient(@Valid @RequestBody PatientDto dto) {
         Patient returnedPatient = patientService.registerPatient(PatientMapper.toEntity(dto));
 
@@ -42,7 +42,7 @@ public class PatientController {
     }
     
     
-    @GetMapping("/patients")
+    @GetMapping
     public ResponseEntity<List<PatientDto>> getAllPatients() {
         List<PatientDto> patients = patientService.getAllPatients().stream()
                 .map(PatientMapper::toDto)
@@ -52,7 +52,7 @@ public class PatientController {
     }
 
 
-    @GetMapping("/patients/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<PatientDto> getPatient(@PathVariable Long id) {
         Patient patient = patientService.getPatient(id);
 
@@ -60,16 +60,18 @@ public class PatientController {
     }
 
 
-    @PutMapping("/patients/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<PatientDto> updatePatient(@PathVariable Long id, @Valid @RequestBody PatientDto dto) {
         Patient updatedPatient = patientService.updatePatient(id, PatientMapper.toEntity(dto));
+
         return ResponseEntity.ok(PatientMapper.toDto(updatedPatient));
     }
 
 
-    @DeleteMapping("/patients/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePatient(@PathVariable Long id) {
         patientService.deletePatient(id);
+
         return ResponseEntity.noContent().build();
     }
 
