@@ -25,11 +25,46 @@ services:
     env_file:
       - env.properties
     environment:
-      - DB_PATIENT_URL=jdbc:mysql://patient_service_db:3306/patient_service
+      - MYSQL_HOST=patient_service_db
+      - MYSQL_PORT=3306
       - TZ=Europe/Paris
     depends_on:
       patient_service_db:
         condition: service_healthy
 
+  note_praticien_service_db:
+    image: mongo:8.3
+    ports:
+      - "27018:27017"
+    env_file:
+      - env.properties
+    environment:
+      - TZ=Europe/Paris
+    volumes:
+      - note_praticien_service:/data/db
+      - ./note-praticien-service/src/main/resources/init.js:/docker-entrypoint-initdb.d/init.js
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  note_praticien_service:
+    build:
+      context: .
+      dockerfile: ./note-praticien-service/Dockerfile
+    ports:
+      - "8083:8083"
+    env_file:
+      - env.properties
+    environment:
+      - MONGODB_HOST=note_praticien_service_db
+      - MONGODB_PORT=27017
+      - TZ=Europe/Paris
+    depends_on:
+      note_praticien_service_db:
+        condition: service_healthy
+
 volumes:
   patient_service:
+  note_praticien_service:
