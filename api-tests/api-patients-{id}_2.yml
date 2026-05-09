@@ -1,0 +1,18 @@
+info:
+  name: /api/patients/{id}_2
+  type: http
+  seq: 5
+
+http:
+  method: DELETE
+  url: "{{patientHost}}/api/patients/7"
+  auth:
+    type: basic
+    username: "{{username}}"
+    password: "{{password}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

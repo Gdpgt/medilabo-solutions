@@ -27,6 +27,10 @@ Cela permet d'ajouter des données dans la table du patient-service.
 
 2. Taper localhost:8080 (port du gateway) dans la barre d'adresse du navigateur pour tomber sur la page d'accueil
 
+## Tests des APIs avec Bruno
+
+Le dossier `api-tests/` contient une collection Bruno pour tester les APIs des microservices. Bruno est un client API natif versionné en Git (alternative légère à Postman). Les fichiers `.yml` définissent les requêtes HTTP (GET, POST, PUT, DELETE) pour chaque endpoint. Pour utiliser la collection : dupliquer le fichier `api-tests/environments/local.example.yml` en `local.yml` (ce fichier contient les variables d'environnement : hosts des services, identifiants d'authentification), puis ouvrir le dossier `api-tests/` dans Bruno. Les requêtes chargent automatiquement les variables depuis `local.yml` et permettent de tester les endpoints sans passer par l'interface web.
+
 ## Architecture
 
 Gateway -> Microservice Frontend SSR (couche d'agrégation) -> Microservices Backend (patient-service, note-praticien-service, evaluation-risque-service)

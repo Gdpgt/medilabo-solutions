@@ -1,0 +1,29 @@
+info:
+  name: /api/notes_1
+  type: http
+  seq: 7
+
+http:
+  method: POST
+  url: "{{noteHost}}/api/notes"
+  body:
+    type: json
+    data: "    {\r
+
+      \    \"idPatient\": 1,\r
+
+      \    \"nomPatient\": \"TestNone\",\r
+
+      \    \"note\": \"Ceci est une note de test\"\r
+
+      \    }"
+  auth:
+    type: basic
+    username: "{{username}}"
+    password: "{{password}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

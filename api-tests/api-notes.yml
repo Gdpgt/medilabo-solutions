@@ -1,0 +1,18 @@
+info:
+  name: /api/notes
+  type: http
+  seq: 6
+
+http:
+  method: GET
+  url: "{{noteHost}}/api/notes"
+  auth:
+    type: basic
+    username: "{{username}}"
+    password: "{{password}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

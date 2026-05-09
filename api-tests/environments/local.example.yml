@@ -1,0 +1,10 @@
+name: local
+variables:
+  - name: username
+    value: "username"
+  - name: password
+    value: "password"
+  - name: patientHost
+    value: "http://localhost:8082"
+  - name: noteHost
+    value: "http://localhost:8083"

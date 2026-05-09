@@ -39,3 +39,7 @@ env*.properties
 !env.properties.example
 !*.env.exemple
 !*.env.template
+
+# Bruno API Client — environnements (contiennent des secrets)
+api-tests/environments/*.yml
+!api-tests/environments/*.example.yml

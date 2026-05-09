@@ -1,0 +1,31 @@
+info:
+  name: /api/patients/{id}_1
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{patientHost}}/api/patients/5"
+  body:
+    type: json
+    data: "    {\r
+
+      \    \"nom\": \"Travolta\",\r
+
+      \    \"prenom\": \"Stacy\",\r
+
+      \    \"dateNaissance\": \"1950-12-31\",\r
+
+      \    \"genre\": \"M\"\r
+
+      \    }"
+  auth:
+    type: basic
+    username: "{{username}}"
+    password: "{{password}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
