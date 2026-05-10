@@ -45,11 +45,4 @@ public class NotePraticien {
     @Setter(AccessLevel.NONE)
     private Instant dateCreation;
 
-
-    public NotePraticien merge(NotePraticien updates) {
-        return this.setIdPatient(updates.getIdPatient())
-                   .setNomPatient(updates.getNomPatient())
-                   .setNote(updates.getNote());
-    }
-
 }

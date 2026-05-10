@@ -25,22 +25,8 @@ public class NotePraticienService {
     }
 
 
-    public List<NotePraticien> getAllNotes() {
-        return notePraticienRepository.findAll();
-    }
-
-
-    public NotePraticien getNote(String id) {
-        return notePraticienRepository.findById(id)
-                .orElseThrow(() -> new NoteNotFoundException(id));
-    }
-
-
-    public NotePraticien updateNote(String id, NotePraticien updates) {
-        NotePraticien note = getNote(id);
-        NotePraticien updated = notePraticienRepository.save(note.merge(updates));
-        log.info("Note praticien mise à jour id={}", id);
-        return updated;
+    public List<NotePraticien> getNotesByPatient(Long idPatient) {
+        return notePraticienRepository.findByIdPatient(idPatient);
     }
 
 

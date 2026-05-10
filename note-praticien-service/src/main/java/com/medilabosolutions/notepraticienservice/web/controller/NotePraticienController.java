@@ -36,28 +36,12 @@ public class NotePraticienController {
 
 
     @GetMapping
-    public ResponseEntity<List<NotePraticienDto>> getAllNotes() {
-        List<NotePraticienDto> notes = notePraticienService.getAllNotes().stream()
+    public ResponseEntity<List<NotePraticienDto>> getNotesByPatient(@RequestParam Long idPatient) {
+        List<NotePraticienDto> notes = notePraticienService.getNotesByPatient(idPatient).stream()
                 .map(NotePraticienMapper::toDto)
                 .toList();
 
         return ResponseEntity.ok(notes);
-    }
-
-
-    @GetMapping("/{id}")
-    public ResponseEntity<NotePraticienDto> getNote(@PathVariable String id) {
-        NotePraticien note = notePraticienService.getNote(id);
-
-        return ResponseEntity.ok(NotePraticienMapper.toDto(note));
-    }
-
-
-    @PutMapping("/{id}")
-    public ResponseEntity<NotePraticienDto> updateNote(@PathVariable String id, @Valid @RequestBody NotePraticienDto dto) {
-        NotePraticien updatedNote = notePraticienService.updateNote(id, NotePraticienMapper.toEntity(dto));
-
-        return ResponseEntity.ok(NotePraticienMapper.toDto(updatedNote));
     }
 
 
