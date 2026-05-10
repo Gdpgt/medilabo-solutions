@@ -44,6 +44,30 @@ Le rôle du gateway ici est de servir de porte d'entrée aux requêtes http, et 
 Avoir le gateway comme porte d'entrée de chaque microservice aurait ajouté un appel supplémentaire par requête, 
 ce qui aurait créé un goulot d'étranglement et n'aurait pas été respectueux des recommandations Green Code. 
 
+## Évaluation du risque de diabète
+
+Le service `evaluation-risque-service` calcule le niveau de risque (`Aucun`, `Limite`, `Danger`, `Précoce`) à partir de l'âge, du genre et du nombre de termes déclencheurs présents dans les notes du praticien. Trois décisions ont été prises pour clarifier des points laissés implicites par les besoins fonctionnels.
+
+### Comptage : termes distincts, pas occurrences
+
+Les 12 termes déclencheurs peuvent être comptés de deux façons : nombre d'occurrences (un terme répété compte plusieurs fois) ou nombre de termes distincts (chaque déclencheur compte pour 1 peu importe sa fréquence). La vérification faite sur les 4 patients de test tranche en faveur des **termes distincts** : la note du patient TestAucun contient "Poids" deux fois dans un contexte sain ("Poids égal ou inférieur au poids recommandé"). En comptant les occurrences, le patient bascule à tort en `Limite` (2-5 déclencheurs). En comptant les termes distincts, on a un seul déclencheur, ce qui est cohérent avec le niveau attendu `Aucun`. 
+
+### Zone grise 0-1 déclencheur pour les patients >30 ans
+
+La spec définit `Aucun` = 0 déclencheur et `Limite` = 2-5 déclencheurs pour les patients de plus de 30 ans, mais ne dit rien du cas à 1 déclencheur. Le patient TestAucun (59 ans, F) tombe précisément dans ce cas (1 déclencheur distinct, niveau attendu `Aucun`). Décision : pour les patients >30 ans, **0 ou 1 déclencheur → Aucun**.
+
+### Stratégie de matching : normalisation + `contains()`
+
+Chaque constante de l'enum `Declencheur` porte un `Set<String>` de mots-clés. La détection se fait en deux temps :
+
+1. **Normalisation** de la note (et des mots-clés au démarrage) : passage en minuscules + suppression des diacritiques via `Normalizer.normalize(s, Form.NFD).replaceAll("\\p{M}", "")`. Cela rend égaux `Cholestérol`, `cholesterol` et `CHOLESTÉROL` lors de la comparaison.
+2. **Recherche** : pour chaque déclencheur, on teste si un de ses mots-clés normalisés est `contains()` dans la note normalisée.
+
+Justification :
+
+- **Tolérance gratuite aux flexions** : `contains("anorma")` attrape "anormal", "anormale", "anormales", "anormaux" sans avoir à les énumérer. Des faux positifs sont possibles, comme "non-fumeur", mais ils sont inexistants sur le jeu de test.
+- **Green Code** : solution sans dépendance externe (`java.text.Normalizer` est dans le JDK), normalisation des mots-clés effectuée une seule fois au chargement de l'enum, faible empreinte CPU et mémoire. 
+
 ## Conventions de langue (approche DDD par gradient)
 
 Décision prise en début de projet, inspirée de l'Ubiquitous Language (Eric Evans, DDD) : le code doit parler la langue des experts métier.
