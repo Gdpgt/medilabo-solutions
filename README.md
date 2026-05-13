@@ -16,9 +16,7 @@ Application microservices de détection du risque de diabète de type 2.
 
 3. A la racine du projet, lancer "docker compose up -d --build"
 
-4. Puis via un shell unix (git bash par ex) :
-"docker exec -i patient_service_db mysql -u patient_service -p$MYSQL_PASSWORD < ./patient-service/src/main/resources/init.sql"
-Cela permet d'ajouter des données dans la table du patient-service.
+4. Les données de test vont être chargée automatiquement par docker au premier lancement grâce aux init.sql et init.js. 
 
 5. Taper localhost:8080 (port du gateway) dans la barre d'adresse du navigateur pour tomber sur la page d'accueil
 
@@ -46,15 +44,42 @@ ce qui aurait créé un goulot d'étranglement et n'aurait pas été respectueux
 
 ## Évaluation du risque de diabète
 
-Le service `evaluation-risque-service` calcule le niveau de risque (`Aucun`, `Limite`, `Danger`, `Précoce`) à partir de l'âge, du genre et du nombre de termes déclencheurs présents dans les notes du praticien. Trois décisions ont été prises pour clarifier des points laissés implicites par les besoins fonctionnels.
+Le service `evaluation-risque-service` calcule le niveau de risque (`Aucun`, `Limite`, `Danger`, `Précoce`) à partir de l'âge, du genre et du nombre de termes déclencheurs présents dans les notes du praticien. Plusieurs décisions ont été prises pour clarifier des points laissés implicites par les besoins fonctionnels.
 
-### Comptage : termes distincts, pas occurrences
+### Comptage : termes distincts sur l'ensemble des notes du patient
 
-Les 12 termes déclencheurs peuvent être comptés de deux façons : nombre d'occurrences (un terme répété compte plusieurs fois) ou nombre de termes distincts (chaque déclencheur compte pour 1 peu importe sa fréquence). La vérification faite sur les 4 patients de test tranche en faveur des **termes distincts** : la note du patient TestAucun contient "Poids" deux fois dans un contexte sain ("Poids égal ou inférieur au poids recommandé"). En comptant les occurrences, le patient bascule à tort en `Limite` (2-5 déclencheurs). En comptant les termes distincts, on a un seul déclencheur, ce qui est cohérent avec le niveau attendu `Aucun`. 
+Les 12 termes déclencheurs peuvent être comptés de plusieurs façons : occurrences (un terme répété compte plusieurs fois), distincts par note (chaque déclencheur compte pour 1 par note, sommé sur toutes les notes), ou distincts sur l'ensemble des notes du patient (chaque déclencheur compte pour 1 au total, peu importe le nombre de notes ou d'occurrences qui le mentionnent). Décision retenue : **distincts sur l'ensemble des notes du patient**.
 
-### Zone grise 0-1 déclencheur pour les patients >30 ans
+Justifications :
 
-La spec définit `Aucun` = 0 déclencheur et `Limite` = 2-5 déclencheurs pour les patients de plus de 30 ans, mais ne dit rien du cas à 1 déclencheur. Le patient TestAucun (59 ans, F) tombe précisément dans ce cas (1 déclencheur distinct, niveau attendu `Aucun`). Décision : pour les patients >30 ans, **0 ou 1 déclencheur → Aucun**.
+- **Élimine les faux positifs intra-note** : la note du patient TestAucun contient "Poids" deux fois dans un contexte sain ("Poids égal ou inférieur au poids recommandé"). En comptant les occurrences, le patient bascule à tort en `Limite` (2-5 déclencheurs). En comptant les termes distincts, on a un seul déclencheur, ce qui est cohérent avec le niveau attendu `Aucun`.
+- **Sémantique médicale** : une condition mentionnée dans plusieurs consultations reste la même observation médicale, pas un signal cumulatif. "Audition anormale" notée à deux consultations successives = 1 déclencheur, pas 2.
+- **Stabilité** : ajouter une note de suivi qui répète un déclencheur déjà connu ne fait pas basculer le niveau de risque.
+
+Les 4 patients de test valident le comptage global aussi bien que le comptage par note (les deux interprétations donnent les bons niveaux), donc le choix se fait sur la sémantique.
+
+### Zone grise 0-1 déclencheur
+
+La spec définit `Aucun` = 0 déclencheur et `Limite` = 2-5 déclencheurs pour les patients de plus de 30 ans, mais ne dit rien du cas à 1 déclencheur. Le patient TestAucun (59 ans, F) tombe précisément dans ce cas (1 déclencheur distinct, niveau attendu `Aucun`). Décision : pour tous les patients, **0 ou 1 déclencheur → Aucun**.
+
+### Zone grise : jeunes patients sous le seuil DANGER
+
+La spec définit pour les patients ≤ 30 ans uniquement les seuils DANGER (M : ≥3, F : ≥4) et PRECOCE (M : ≥5, F : ≥7). Elle ne dit rien d'un jeune homme à 2 déclencheurs ou d'une jeune femme à 2-3 déclencheurs. `Limite` est explicitement réservé aux > 30 ans. Décision : **jeune patient sous le seuil DANGER de son genre → Aucun**, par cohérence avec la logique "pas assez de signaux pour alerter".
+
+### Table récapitulative des seuils
+
+| Âge | Genre | Nb déclencheurs distincts | Niveau |
+|-----|-------|---------------------------|--------|
+| Tous | Tous | 0-1 | Aucun |
+| > 30 ans | Tous | 2-5 | Limite |
+| > 30 ans | Tous | 6-7 | Danger |
+| > 30 ans | Tous | ≥ 8 | Précoce |
+| ≤ 30 ans | M | 2 | Aucun *(hors spec)* |
+| ≤ 30 ans | M | 3-4 | Danger |
+| ≤ 30 ans | M | ≥ 5 | Précoce |
+| ≤ 30 ans | F | 2-3 | Aucun *(hors spec)* |
+| ≤ 30 ans | F | 4-6 | Danger |
+| ≤ 30 ans | F | ≥ 7 | Précoce |
 
 ### Stratégie de matching : normalisation + `contains()`
 
@@ -65,7 +90,7 @@ Chaque constante de l'enum `Declencheur` porte un `Set<String>` de mots-clés. L
 
 Justification :
 
-- **Tolérance gratuite aux flexions** : `contains("anorma")` attrape "anormal", "anormale", "anormales", "anormaux" sans avoir à les énumérer. Des faux positifs sont possibles, comme "non-fumeur", mais ils sont inexistants sur le jeu de test.
+- **Tolérance gratuite aux flexions** : `contains("anorma")` attrape "anormal", "anormale", "anormales", "anormaux" sans avoir à les énumérer. Des faux positifs sont possibles, comme "non-fumeur" pour "fumeur", mais ils sont inexistants sur le jeu de test.
 - **Green Code** : solution sans dépendance externe (`java.text.Normalizer` est dans le JDK), normalisation des mots-clés effectuée une seule fois au chargement de l'enum, faible empreinte CPU et mémoire. 
 
 ## Conventions de langue (approche DDD par gradient)
@@ -102,6 +127,17 @@ Pour la mise à jour du patient, au lieu de récupérer dans la base le patient 
 
 **Suppression :**
 Pour les suppressions d'entités, on vérifie leur existence (existsById) en base au lieu de les récupérer (findById). La récupération complète est inutile et plus coûteuse en énergie. 
+
+### Cache des valeurs de l'enum `Declencheur`
+
+Lors du comptage des déclencheurs, on parcourt l'ensemble des constantes de l'enum `Declencheur` pour chaque évaluation de risque. L'appel `Declencheur.values()` retourne **une nouvelle copie défensive du tableau à chaque invocation**. 
+Pour 12 constantes ce coût est faible, mais il est **strictement inutile** : l'enum est immuable, le tableau est toujours le même.
+
+La liste est donc mise en cache une fois pour toutes au chargement de la classe :
+
+### Validation fail-fast de `dateNaissance`
+
+Avant l'appel à `note-praticien-service`, on vérifie que `dateNaissance` n'est pas `null` via `Objects.requireNonNull(...)`. Si la donnée patient est invalide, **l'appel HTTP aux notes n'a pas lieu** — économie d'un aller-retour réseau, de bande passante et de temps CPU côté `note-praticien-service`. Le message d'erreur est construit via un `Supplier<String>` (`() -> "..."`) pour n'être évalué qu'en cas d'échec, évitant la concaténation de chaîne dans le cas nominal.
 
 ### Optimisation des Dockerfiles
 
