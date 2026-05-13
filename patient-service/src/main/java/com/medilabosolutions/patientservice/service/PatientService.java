@@ -22,7 +22,7 @@ public class PatientService {
     // Géré dans le global handler via handleDataIntegrationViolationException.
     public Patient registerPatient(Patient patient) {
         Patient saved = patientRepository.save(patient);
-        log.info("Patient enregistré id={}", saved.getId());
+        log.info("Patient enregistré id = {}", saved.getId());
         return saved;
     }
 
@@ -42,7 +42,7 @@ public class PatientService {
     public Patient updatePatient(Long id, Patient updates) {
         // .save() is implicit in a transaction : dirty checking by Hibernate at the Commit
         Patient updated = getPatient(id).merge(updates);
-        log.info("Patient mis à jour id={}", id);
+        log.info("Patient mis à jour id = {}", id);
         return updated;
     }
 
@@ -53,7 +53,7 @@ public class PatientService {
         }
 
         patientRepository.deleteById(id);
-        log.info("Patient supprimé id={}", id);
+        log.info("Patient supprimé id = {}", id);
     }
 
 }

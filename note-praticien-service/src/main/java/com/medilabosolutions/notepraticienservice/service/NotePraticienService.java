@@ -20,7 +20,7 @@ public class NotePraticienService {
 
     public NotePraticien createNote(NotePraticien note) {
         NotePraticien saved = notePraticienRepository.save(note);
-        log.info("Note praticien enregistrée id={}", saved.getId());
+        log.info("Note praticien enregistrée id = {}", saved.getId());
         return saved;
     }
 
@@ -36,7 +36,7 @@ public class NotePraticienService {
         }
 
         notePraticienRepository.deleteById(id);
-        log.info("Note praticien supprimée id={}", id);
+        log.info("Note praticien supprimée id = {}", id);
     }
 
 }
