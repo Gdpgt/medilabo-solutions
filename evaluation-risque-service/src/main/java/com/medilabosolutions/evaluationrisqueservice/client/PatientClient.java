@@ -1,8 +1,10 @@
 package com.medilabosolutions.evaluationrisqueservice.client;
 
 import com.medilabosolutions.evaluationrisqueservice.client.dto.PatientDto;
+import com.medilabosolutions.evaluationrisqueservice.domain.exception.PatientNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 @Component
@@ -23,9 +25,14 @@ public class PatientClient {
 
 
     public PatientDto getPatient(Long idPatient) {
-        return client.get()
-                .uri("/api/patients/{id}", idPatient)
-                .retrieve()
-                .body(PatientDto.class);
+        try {
+            return client.get()
+                    .uri("/api/patients/{id}", idPatient)
+                    .retrieve()
+                    .body(PatientDto.class);
+
+        } catch (HttpClientErrorException.NotFound _) {
+            throw new PatientNotFoundException(idPatient);
+        }
     }
 }
