@@ -1,60 +1,52 @@
-package com.medilabosolutions.notepraticienservice.web.advice;
+package com.medilabosolutions.evaluationrisqueservice.web.advice;
 
-import com.medilabosolutions.notepraticienservice.domain.exception.NoteNotFoundException;
+import com.medilabosolutions.evaluationrisqueservice.domain.exception.PatientNotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-
-import java.util.stream.Collectors;
-
 
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
 
 
-    @ExceptionHandler(NoteNotFoundException.class)
-    public ResponseEntity<Void> handleNoteNotFoundException(NoteNotFoundException e) {
-        log.warn("La note à l'id {} n'existe pas en base.", e.getId());
+    @ExceptionHandler(PatientNotFoundException.class)
+    public ResponseEntity<Void> handlePatientNotFoundException(PatientNotFoundException e) {
+        log.warn(e.getMessage());
         // 404
         return ResponseEntity.notFound().build();
     }
 
 
-    @ExceptionHandler(DataAccessException.class)
-    public ResponseEntity<String> handleDataAccessException(DataAccessException e) {
-        log.error("L'accès à la base de donnée a échoué", e);
-        // 500
-        return ResponseEntity.internalServerError().body("L'accès à la base de donnée a échoué. Veuillez réessayer plus tard.");
+    @ExceptionHandler(HttpServerErrorException.class)
+    public ResponseEntity<String> handleHttpServerErrorException(HttpServerErrorException e) {
+        log.error("Une erreur du serveur est survenue", e);
+        // Bad Gateway
+        return ResponseEntity.status(502).body("Une erreur du serveur est survenue. Veuillez réessayer plus tard.");
     }
 
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        String message = e.getBindingResult().getFieldErrors().stream()
-                .map(fe -> fe.getField() + " : " + fe.getDefaultMessage())
-                .collect(Collectors.joining(", "));
-
-        log.warn("Le formulaire contient des données non valides : {}", message);
-
-        // 400
-        return ResponseEntity.badRequest().body("Le formulaire contient des données non valides : " + message);
+    @ExceptionHandler(ResourceAccessException.class)
+    public ResponseEntity<String> handleResourceAccessException(ResourceAccessException e) {
+        log.error("Le service est indisponible", e);
+        // Service Unavailable
+        return ResponseEntity.status(503).body("Une erreur du serveur est survenue. Veuillez réessayer plus tard.");
     }
 
 
-    @ExceptionHandler(OptimisticLockingFailureException.class)
-    public ResponseEntity<String> handleOptimisticLockingFailureException(OptimisticLockingFailureException e) {
-        log.warn("Cette note a été modifiée par un autre utilisateur entre temps : {}", e.getMessage());
-        // Conflict
-        return ResponseEntity.status(409).body("Cette note a été modifiée par un autre utilisateur entre temps. Rechargez et recommencez.");
+    @ExceptionHandler(HttpClientErrorException.class)
+    public ResponseEntity<String> handleHttpClientErrorException(HttpClientErrorException e) {
+        log.error("Une erreur est survenue", e);
+        // Bad Gateway
+        return ResponseEntity.status(502).body("Une erreur du serveur est survenue. Veuillez réessayer plus tard.");
     }
 
 
