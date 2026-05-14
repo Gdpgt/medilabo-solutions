@@ -4,6 +4,7 @@ WORKDIR /app
 COPY pom.xml .
 COPY ./patient-service/pom.xml ./patient-service/
 COPY ./note-praticien-service/pom.xml ./note-praticien-service/
+COPY ./evaluation-risque-service/pom.xml ./evaluation-risque-service/
 # Downloads dependencies and caches them (BuildKit) to avoid redownloading them on every change.
 RUN --mount=type=cache,target=/root/.m2 mvn dependency:go-offline -pl note-praticien-service
 COPY ./note-praticien-service/src ./note-praticien-service/src

@@ -6,13 +6,13 @@ COPY ./patient-service/pom.xml ./patient-service/
 COPY ./note-praticien-service/pom.xml ./note-praticien-service/
 COPY ./evaluation-risque-service/pom.xml ./evaluation-risque-service/
 # Downloads dependencies and caches them (BuildKit) to avoid redownloading them on every change.
-RUN --mount=type=cache,target=/root/.m2 mvn dependency:go-offline -pl patient-service
-COPY ./patient-service/src ./patient-service/src
-RUN --mount=type=cache,target=/root/.m2 mvn package -pl patient-service -DskipTests -o
+RUN --mount=type=cache,target=/root/.m2 mvn dependency:go-offline -pl evaluation-risque-service
+COPY ./evaluation-risque-service/src ./evaluation-risque-service/src
+RUN --mount=type=cache,target=/root/.m2 mvn package -pl evaluation-risque-service -DskipTests -o
 
 # Stage 2 : Runtime
 FROM eclipse-temurin:25-jre-alpine
 WORKDIR /app
-COPY --from=build /app/patient-service/target/*.jar app.jar
-EXPOSE 8082
+COPY --from=build /app/evaluation-risque-service/target/*.jar app.jar
+EXPOSE 8084
 ENTRYPOINT ["java", "-jar", "app.jar"]

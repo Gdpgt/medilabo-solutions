@@ -26,6 +26,7 @@ public class SecurityConfig {
         return http
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests
+                                .requestMatchers("/actuator/health/**").permitAll()
                                 .anyRequest()
                                 .authenticated()
                 )

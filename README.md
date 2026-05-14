@@ -141,10 +141,16 @@ Avant l'appel à `note-praticien-service`, on vérifie que `dateNaissance` n'est
 
 ### Optimisation des Dockerfiles
 
-* Les dockerfiles ont été optimisés de sorte à mettre en cache les dépendances Maven -> moins de téléchargements réseaux à chaque modification du code source, builds plus rapides, moins d'énergie consommée.
-* Une image JRE, plus légère, a été utilisée pour exécuter les applications à la place d’un JDK complet, ce qui réduit la quantité de données téléchargées, stockées et transférées sur le réseau.
+- Les dockerfiles ont été optimisés de sorte à mettre en cache les dépendances Maven -> moins de téléchargements réseaux à chaque modification du code source, builds plus rapides, moins d'énergie consommée.
+- Une image JRE, plus légère, a été utilisée pour exécuter les applications à la place d’un JDK complet, ce qui réduit la quantité de données téléchargées, stockées et transférées sur le réseau.
 
 ### Gestion des plugins
 
 La dépendance Lombok, bien que nécessaire à la compilation n'a pas besoin de figurer dans le .jar final d'un service, c'est pourquoi on l'exclue du spring-boot-maven-plugin.
+
+### Optimisation des healthchecks Docker
+
+- J'ai envisagé de désactiver les healthchecks après le démarrage pour économiser des cycles CPU. J'ai écarté cette option car elle empêche la détection des pannes en runtime (ex : perte de connexion DB). 
+En contrepartie, j'ai porté interval de 30s par défaut à 2min.
+- `wget --spider` : la commande ne télécharge pas le corps de la réponse HTTP, seulement les headers. Moins d'IO, moins de mémoire, moins de CPU côté serveur comme côté client.
 
