@@ -8,3 +8,5 @@ variables:
     value: "http://localhost:8082"
   - name: noteHost
     value: "http://localhost:8083"
+  - name: evaluationHost
+    value: http://localhost:8084

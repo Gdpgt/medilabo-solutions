@@ -1,11 +1,11 @@
 info:
   name: /api/notes/{id}_2
   type: http
-  seq: 10
+  seq: 8
 
 http:
   method: DELETE
-  url: "{{noteHost}}/api/notes/69ff41ea923a41c6c3e26a49"
+  url: "{{noteHost}}/api/notes/6a05f367d6e57ea9ecdc0cc3"
   auth:
     type: basic
     username: "{{username}}"

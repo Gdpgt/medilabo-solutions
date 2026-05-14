@@ -1,11 +1,11 @@
 info:
-  name: /api/notes/{id}
+  name: /api/evaluation-risque/{idPatient}
   type: http
-  seq: 8
+  seq: 9
 
 http:
   method: GET
-  url: "{{noteHost}}/api/notes/69ff41ea923a41c6c3e26a49"
+  url: "{{evaluationHost}}/api/evaluation-risque/4"
   auth:
     type: basic
     username: "{{username}}"

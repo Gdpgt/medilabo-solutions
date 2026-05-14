@@ -8,15 +8,12 @@ http:
   url: "{{noteHost}}/api/notes"
   body:
     type: json
-    data: "    {\r
-
-      \    \"idPatient\": 1,\r
-
-      \    \"nomPatient\": \"TestNone\",\r
-
-      \    \"note\": \"Ceci est une note de test\"\r
-
-      \    }"
+    data: |2-
+          {
+          "idPatient": 4,
+          "nomPatient": "TestPrécoce",
+          "note": "TEST"
+          }
   auth:
     type: basic
     username: "{{username}}"

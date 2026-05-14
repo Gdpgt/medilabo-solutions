@@ -5,7 +5,11 @@ info:
 
 http:
   method: GET
-  url: "{{noteHost}}/api/notes"
+  url: "{{noteHost}}/api/notes?idPatient=4"
+  params:
+    - name: idPatient
+      value: "4"
+      type: query
   auth:
     type: basic
     username: "{{username}}"
