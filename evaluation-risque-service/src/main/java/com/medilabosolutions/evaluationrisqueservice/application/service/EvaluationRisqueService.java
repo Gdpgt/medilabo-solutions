@@ -27,7 +27,7 @@ public class EvaluationRisqueService {
     private static final List<Declencheur> DECLENCHEURS = List.of(Declencheur.values());
 
 
-    public EvaluationRisque evaluateRiskByPatient(Long idPatient) {
+    public EvaluationRisque evaluateRisqueByPatient(Long idPatient) {
         PatientDto patientDto = patientClient.getPatient(idPatient);
         Objects.requireNonNull(
                 patientDto.dateNaissance(),
