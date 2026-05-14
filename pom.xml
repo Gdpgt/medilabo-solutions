@@ -19,6 +19,7 @@
         <module>patient-service</module>
         <module>note-praticien-service</module>
         <module>evaluation-risque-service</module>
+        <module>frontend-service</module>
     </modules>
 
     <properties>
