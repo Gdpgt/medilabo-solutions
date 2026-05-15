@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head('Requête invalide')}"></head>
+
+<body>
+
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container">
+    <hgroup>
+        <h1>Requête invalide</h1>
+        <p>Erreur 400</p>
+    </hgroup>
+    <p th:text="${message}">La requête est invalide ou mal formée.</p>
+    <p><a th:href="@{/patients}">Retour à la liste des patients</a></p>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

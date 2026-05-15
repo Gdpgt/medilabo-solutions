@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head('Service indisponible')}"></head>
+
+<body>
+
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container">
+    <hgroup>
+        <h1>Service indisponible</h1>
+        <p>Erreur 503</p>
+    </hgroup>
+    <p th:text="${message}">Un service est injoignable. Veuillez réessayer dans quelques instants.</p>
+    <p><a th:href="@{/patients}">Retour à la liste des patients</a></p>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

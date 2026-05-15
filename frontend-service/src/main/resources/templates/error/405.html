@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head('Méthode non autorisée')}"></head>
+
+<body>
+
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container">
+    <hgroup>
+        <h1>Méthode non autorisée</h1>
+        <p>Erreur 405</p>
+    </hgroup>
+    <p th:text="${message}">Méthode HTTP non autorisée.</p>
+    <p><a th:href="@{/patients}">Retour à la liste des patients</a></p>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

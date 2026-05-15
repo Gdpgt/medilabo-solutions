@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head('Erreur interne')}"></head>
+
+<body>
+
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container">
+    <hgroup>
+        <h1>Erreur interne</h1>
+        <p>Erreur 500</p>
+    </hgroup>
+    <p th:text="${message}">Une erreur inattendue est survenue.</p>
+    <p><a th:href="@{/patients}">Retour à la liste des patients</a></p>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

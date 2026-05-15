@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head('Conflit')}"></head>
+
+<body>
+
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container">
+    <hgroup>
+        <h1>Conflit</h1>
+        <p>Erreur 409</p>
+    </hgroup>
+    <p th:text="${message}">La requête entre en conflit avec l'état actuel de la ressource.</p>
+    <p><a th:href="@{/patients}">Retour à la liste des patients</a></p>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

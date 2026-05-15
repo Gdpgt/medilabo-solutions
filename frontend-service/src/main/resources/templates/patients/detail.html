@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head('Détail patient')}"></head>
+
+<body>
+
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container">
+
+    <p><a th:href="@{/patients}">&larr; Retour à la liste</a></p>
+
+    <article>
+        <header>
+            <hgroup>
+                <h2>
+                    <span th:text="${detail.patient.nom}">Nom</span>
+                    <span th:text="${detail.patient.prenom}">Prénom</span>
+                </h2>
+                <p>Informations personnelles</p>
+            </hgroup>
+        </header>
+
+        <dl>
+            <dt>Nom</dt>
+            <dd th:text="${detail.patient.nom}">Nom</dd>
+
+            <dt>Prénom</dt>
+            <dd th:text="${detail.patient.prenom}">Prénom</dd>
+
+            <dt>Date de naissance</dt>
+            <dd th:text="${#temporals.format(detail.patient.dateNaissance, 'dd/MM/yyyy')}">01/01/1970</dd>
+
+            <dt>Genre</dt>
+            <dd th:text="${detail.patient.genre.name() == 'M'} ? 'Masculin' : 'Féminin'">Masculin</dd>
+
+            <dt>Adresse</dt>
+            <dd th:text="${detail.patient.adresse}">Adresse</dd>
+
+            <dt>Téléphone</dt>
+            <dd th:text="${detail.patient.telephone}">Téléphone</dd>
+        </dl>
+
+        <footer>
+            <a th:href="@{/patients/{id}/modifier(id=${detail.patient.id})}" role="button">Modifier</a>
+        </footer>
+    </article>
+
+    <article>
+        <header>
+            <h3>Niveau de risque</h3>
+        </header>
+
+        <div th:if="${detail.evaluationDisponible}">
+            <p>
+                <mark th:text="${detail.evaluation.niveauRisque().getLibelle()}">Aucun</mark>
+            </p>
+        </div>
+
+        <div th:unless="${detail.evaluationDisponible}">
+            <p><em>Niveau de risque temporairement indisponible</em></p>
+        </div>
+    </article>
+
+    <article>
+        <header>
+            <h3>Notes du praticien</h3>
+        </header>
+
+        <div th:if="${detail.notesDisponibles}">
+
+            <div th:if="${#lists.isEmpty(detail.notes)}">
+                <p><em>Aucune note enregistrée pour ce patient.</em></p>
+            </div>
+
+            <ul th:unless="${#lists.isEmpty(detail.notes)}">
+                <li th:each="note : ${detail.notes}">
+                    <p th:text="${note.note}">Contenu de la note</p>
+                    <form th:action="@{/patients/{id}/notes/{noteId}(id=${detail.patient.id}, noteId=${note.id})}"
+                          method="post">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="secondary outline">Supprimer</button>
+                    </form>
+                </li>
+            </ul>
+
+            <hr>
+
+            <h4>Ajouter une note</h4>
+            <form th:action="@{/patients/{id}/notes(id=${detail.patient.id})}"
+                  th:object="${nouvelleNote}"
+                  method="post">
+                <label for="note">Contenu de la note</label>
+                <textarea id="note" th:field="*{note}" rows="4" required></textarea>
+                <button type="submit">Ajouter la note</button>
+            </form>
+
+        </div>
+
+        <div th:unless="${detail.notesDisponibles}">
+            <p><em>Notes temporairement indisponibles</em></p>
+        </div>
+    </article>
+
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>
