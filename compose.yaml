@@ -95,6 +95,48 @@ services:
       <<: *healthcheck-timings
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8084/actuator/health/readiness || exit 1"]
 
+  frontend-service:
+    build:
+      context: .
+      dockerfile: ./frontend-service/Dockerfile
+    ports:
+      - "8081:8081"
+    env_file:
+      - env.properties
+    environment:
+      - TZ=Europe/Paris
+      - PATIENT_SERVICE_URL=http://patient-service:8082
+      - NOTE_PRATICIEN_SERVICE_URL=http://note-praticien-service:8083
+      - EVALUATION_RISQUE_SERVICE_URL=http://evaluation-risque-service:8084
+    depends_on:
+      patient-service:
+        condition: service_healthy
+      note-praticien-service:
+        condition: service_healthy
+      evaluation-risque-service:
+        condition: service_healthy
+    healthcheck:
+      <<: *healthcheck-timings
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8081/actuator/health/readiness || exit 1"]
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: ./api-gateway/Dockerfile
+    ports:
+      - "8080:8080"
+    env_file:
+      - env.properties
+    environment:
+      - TZ=Europe/Paris
+      - FRONTEND_SERVICE_URL=http://frontend-service:8081
+    depends_on:
+      frontend-service:
+        condition: service_healthy
+    healthcheck:
+      <<: *healthcheck-timings
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health/readiness || exit 1"]
+
 volumes:
   patient-service:
   note-praticien-service:
