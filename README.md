@@ -18,16 +18,26 @@ Application microservices de détection du risque de diabète de type 2.
 
 4. Les données de test vont être chargée automatiquement par docker au premier lancement grâce aux init.sql et init.js. 
 
-5. Taper localhost:8080 (port du gateway) dans la barre d'adresse du navigateur pour tomber sur la page d'accueil
+5. Taper localhost:8080 (port du gateway) dans la barre d'adresse du navigateur. La requête traverse alors le flow complet `Browser → Gateway:8080 → Frontend:8081 → 3 microservices backend`. À la première requête, le navigateur affiche la **popup native Basic Auth** : saisir les credentials définis dans `env.properties` (`MEDILABO_USERNAME` / `MEDILABO_PASSWORD`) pour accéder à la page d'accueil.
 
 #### Aux lancements suivants
 1. A la racine du projet, lancer "docker compose up -d"
 
-2. Taper localhost:8080 (port du gateway) dans la barre d'adresse du navigateur pour tomber sur la page d'accueil
+2. Taper localhost:8080 (port du gateway) dans la barre d'adresse du navigateur. Si l'onglet a été fermé depuis la dernière session, le navigateur redemande les credentials via la popup native Basic Auth.
+
+## Authentification et déconnexion
+
+L'authentification s'effectue en Basic Auth via la **popup native du navigateur**, déclenchée par le `401 WWW-Authenticate: Basic` renvoyé par la Gateway à la première requête. Les credentials saisis sont **mémorisés par le navigateur pour la durée de vie de l'onglet** et automatiquement renvoyés dans le header `Authorization` sur chaque requête suivante, sans session côté serveur.
+
+**Pas de bouton "Déconnexion"** : c'est une limitation assumée de Basic Auth. Il n'existe aucune session serveur à invalider, et le navigateur conserve les credentials en mémoire jusqu'à la fermeture de l'onglet. **Pour se déconnecter : fermer l'onglet du navigateur.**
+
+## Choix de la variante Spring Cloud Gateway
+
+La Gateway utilise **`spring-cloud-starter-gateway-server-webmvc`** (variante servlet) plutôt que `spring-cloud-starter-gateway` (variante réactive WebFlux). Le reste du projet étant entièrement en Spring MVC servlet, cette variante préserve la cohérence de la stack et évite d'introduire un paradigme réactif qui n'est pas utilisé ici.
 
 ## Tests des APIs avec Bruno
 
-Le dossier `api-tests/` contient une collection Bruno pour tester les APIs des microservices. Bruno est un client API natif versionné en Git (alternative légère à Postman). Les fichiers `.yml` définissent les requêtes HTTP (GET, POST, PUT, DELETE) pour chaque endpoint. Pour utiliser la collection : dupliquer le fichier `api-tests/environments/local.example.yml` en `local.yml` (ce fichier contient les variables d'environnement : hosts des services, identifiants d'authentification), puis ouvrir le dossier `api-tests/` dans Bruno. Les requêtes chargent automatiquement les variables depuis `local.yml` et permettent de tester les endpoints sans passer par l'interface web.
+Le dossier `api-tests/` contient une collection Bruno pour tester les APIs des microservices. Bruno est un client API natif versionné en Git (alternative légère à Postman). Les fichiers `.yml` définissent les requêtes HTTP (GET, POST, PUT, DELETE) pour chaque endpoint. Pour utiliser la collection : dupliquer le fichier `api-tests/environments/local.example.yml` en `local.yml` (ce fichier contient les variables d'environnement : hosts des services, identifiants d'authentification), puis ouvrir le dossier `api-tests/` dans l'app desktop Bruno. Les requêtes chargent automatiquement les variables depuis `local.yml` et permettent de tester les endpoints sans passer par l'interface web.
 
 ## Architecture
 
@@ -58,7 +68,7 @@ Justifications :
 
 Les 4 patients de test valident le comptage global aussi bien que le comptage par note (les deux interprétations donnent les bons niveaux), donc le choix se fait sur la sémantique.
 
-### Zone grise 0-1 déclencheur
+### Zone grise : 0-1 déclencheur
 
 La spec définit `Aucun` = 0 déclencheur et `Limite` = 2-5 déclencheurs pour les patients de plus de 30 ans, mais ne dit rien du cas à 1 déclencheur. Le patient TestAucun (59 ans, F) tombe précisément dans ce cas (1 déclencheur distinct, niveau attendu `Aucun`). Décision : pour tous les patients, **0 ou 1 déclencheur → Aucun**.
 
@@ -90,8 +100,7 @@ Chaque constante de l'enum `Declencheur` porte un `Set<String>` de mots-clés. L
 
 Justification :
 
-- **Tolérance gratuite aux flexions** : `contains("anorma")` attrape "anormal", "anormale", "anormales", "anormaux" sans avoir à les énumérer. Des faux positifs sont possibles, comme "non-fumeur" pour "fumeur", mais ils sont inexistants sur le jeu de test.
-- **Green Code** : solution sans dépendance externe (`java.text.Normalizer` est dans le JDK), normalisation des mots-clés effectuée une seule fois au chargement de l'enum, faible empreinte CPU et mémoire. 
+- **Tolérance gratuite aux flexions** : `contains("anorma")` attrape "anormal", "anormale", "anormales", "anormaux" sans avoir à les énumérer. Des faux positifs sont possibles, comme "non-fumeur" pour "fumeur", mais ils sont inexistants sur le jeu de test. 
 
 ## Conventions de langue (approche DDD par gradient)
 
@@ -133,11 +142,29 @@ Pour les suppressions d'entités, on vérifie leur existence (existsById) en bas
 Lors du comptage des déclencheurs, on parcourt l'ensemble des constantes de l'enum `Declencheur` pour chaque évaluation de risque. L'appel `Declencheur.values()` retourne **une nouvelle copie défensive du tableau à chaque invocation**. 
 Pour 12 constantes ce coût est faible, mais il est **strictement inutile** : l'enum est immuable, le tableau est toujours le même.
 
-La liste est donc mise en cache une fois pour toutes au chargement de la classe :
+La liste est donc mise en cache une fois pour toutes au chargement de la classe EvaluationRisqueService.
 
 ### Validation fail-fast de `dateNaissance`
 
-Avant l'appel à `note-praticien-service`, on vérifie que `dateNaissance` n'est pas `null` via `Objects.requireNonNull(...)`. Si la donnée patient est invalide, **l'appel HTTP aux notes n'a pas lieu** — économie d'un aller-retour réseau, de bande passante et de temps CPU côté `note-praticien-service`. Le message d'erreur est construit via un `Supplier<String>` (`() -> "..."`) pour n'être évalué qu'en cas d'échec, évitant la concaténation de chaîne dans le cas nominal.
+Avant l'appel à `note-praticien-service`, on vérifie que `dateNaissance` n'est pas `null` via `Objects.requireNonNull(...)`. Si la donnée patient est invalide, **l'appel HTTP aux notes n'a pas lieu** — économie d'un aller-retour réseau, de bande passante et de temps CPU côté `note-praticien-service`.
+
+### Cache des données patient côté frontend-service
+
+Le `frontend-service` met en cache les lectures de patients (`getPatient`, `getAllPatients`) via **Caffeine** intégré à Spring Cache, avec un TTL de 2 minutes et une taille maximale de 500 entrées. Chaque opération d'écriture (création, mise à jour, suppression) déclenche une éviction explicite via `@CacheEvict` pour éviter de servir des données obsolètes après une action utilisateur.
+
+**Pourquoi ce cache est justifié :**
+
+- Les données démographiques d'un patient (nom, adresse, téléphone) sont souvent lues (navigation liste → détail → édition) mais rarement modifiées. Chaque hit du cache évite un appel HTTP au `patient-service` et une requête SQL au MySQL.
+- Le TTL court (2 min) borne la fenêtre d'obsolescence à un niveau acceptable pour des données non cliniques.
+- L'éviction sur écriture garantit qu'un utilisateur qui vient de modifier un patient voit immédiatement la version à jour.
+
+**Pourquoi les notes et l'évaluation de risque ne sont PAS cachées :**
+
+Ce sont des données cliniques sensibles à la fraîcheur. Un médecin qui ajoute une note "fumeur" et recharge la page doit voir le niveau de risque recalculé immédiatement. Cacher l'évaluation ferait courir le risque d'une décision médicale prise sur un niveau obsolète. La priorité métier (fraîcheur des données cliniques) prime sur l'optimisation énergétique.
+
+**Choix de Caffeine plutôt qu'un cache maison :**
+
+Une `ConcurrentHashMap` aurait évité la dépendance, mais sans TTL ni taille maximale, elle cause une fuite mémoire et sert indéfiniment des données potentiellement périmées. Caffeine (≈800 Ko, zéro dépendance transitive) fournit TTL, éviction et thread safeness, et est la solution recommandée par Spring Boot pour le cache local. Réécrire ces mécanismes à la main aurait coûté plus en complexité et en risque de bug qu'en gain de légèreté.
 
 ### Optimisation des Dockerfiles
 
