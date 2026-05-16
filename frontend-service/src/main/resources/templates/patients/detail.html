@@ -23,27 +23,38 @@
         </header>
 
         <dl>
-            <dt>Nom</dt>
+            <dt>Nom :</dt>
             <dd th:text="${detail.patient.nom}">Nom</dd>
 
-            <dt>Prénom</dt>
+            <dt>Prénom :</dt>
             <dd th:text="${detail.patient.prenom}">Prénom</dd>
 
-            <dt>Date de naissance</dt>
+            <dt>Date de naissance :</dt>
             <dd th:text="${#temporals.format(detail.patient.dateNaissance, 'dd/MM/yyyy')}">01/01/1970</dd>
 
-            <dt>Genre</dt>
+            <dt>Genre :</dt>
             <dd th:text="${detail.patient.genre.name() == 'M'} ? 'Masculin' : 'Féminin'">Masculin</dd>
 
-            <dt>Adresse</dt>
-            <dd th:text="${detail.patient.adresse}">Adresse</dd>
+            <th:block th:if="${detail.patient.adresse != null and !#strings.isEmpty(detail.patient.adresse)}">
+                <dt>Adresse :</dt>
+                <dd th:text="${detail.patient.adresse}">Adresse</dd>
+            </th:block>
 
-            <dt>Téléphone</dt>
-            <dd th:text="${detail.patient.telephone}">Téléphone</dd>
+            <th:block th:if="${detail.patient.telephone != null and !#strings.isEmpty(detail.patient.telephone)}">
+                <dt>Téléphone :</dt>
+                <dd th:text="${detail.patient.telephone}">Téléphone</dd>
+            </th:block>
         </dl>
 
         <footer>
-            <a th:href="@{/patients/{id}/modifier(id=${detail.patient.id})}" role="button">Modifier</a>
+            <a th:href="@{/patients/{id}/modifier(id=${detail.patient.id})}" role="button"
+               style="width:auto; margin-right:0.5rem;">Modifier</a>
+            <form th:action="@{/patients/{id}(id=${detail.patient.id})}" method="post"
+                  style="display:inline-block; margin:0;"
+                  onsubmit="return confirm('Confirmez-vous la suppression de ce patient ?');">
+                <input type="hidden" name="_method" value="DELETE">
+                <button type="submit" class="secondary" style="width:auto;">Supprimer</button>
+            </form>
         </footer>
     </article>
 
@@ -91,6 +102,8 @@
             <form th:action="@{/patients/{id}/notes(id=${detail.patient.id})}"
                   th:object="${nouvelleNote}"
                   method="post">
+                <input type="hidden" th:field="*{idPatient}">
+                <input type="hidden" th:field="*{nomPatient}">
                 <label for="note">Contenu de la note</label>
                 <textarea id="note" th:field="*{note}" rows="4" required></textarea>
                 <button type="submit">Ajouter la note</button>

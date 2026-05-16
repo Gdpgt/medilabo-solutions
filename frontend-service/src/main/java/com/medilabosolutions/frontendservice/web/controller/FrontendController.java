@@ -110,6 +110,13 @@ public class FrontendController {
     }
 
 
+    @DeleteMapping("/patients/{id}")
+    public String deletePatient(@PathVariable Long id) {
+        patientService.deletePatient(id);
+        return "redirect:/patients";
+    }
+
+
     @PostMapping("/patients/{id}/notes")
     public String createNote(@PathVariable Long id,
                              @Valid @ModelAttribute("nouvelleNote") NotePraticienDto dto,
