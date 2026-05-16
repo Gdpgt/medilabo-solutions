@@ -1,0 +1,18 @@
+info:
+  name: /api/patients (sans auth)
+  type: http
+  seq: 10
+
+http:
+  method: GET
+  url: "{{patientHost}}/api/patients"
+  auth:
+    type: basic
+    username: ""
+    password: ""
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

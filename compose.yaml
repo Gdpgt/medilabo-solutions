@@ -6,7 +6,7 @@ x-healthcheck-timings: &healthcheck-timings
   start_interval: 5s     # Pendant le start_period, on verifie toutes les 5s pour detecter rapidement le UP
 
 services:
-  patient-service_db:
+  patient-service-db:
     image: mysql:9.6
     ports:
       - "3307:3306"
@@ -30,17 +30,17 @@ services:
     env_file:
       - env.properties
     environment:
-      - MYSQL_HOST=patient-service_db
+      - MYSQL_HOST=patient-service-db
       - MYSQL_PORT=3306
       - TZ=Europe/Paris
     depends_on:
-      patient-service_db:
+      patient-service-db:
         condition: service_healthy
     healthcheck:
       <<: *healthcheck-timings
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8082/actuator/health/readiness || exit 1"]
 
-  note-praticien-service_db:
+  note-praticien-service-db:
     image: mongo:8.3
     ports:
       - "27018:27017"
@@ -64,11 +64,11 @@ services:
     env_file:
       - env.properties
     environment:
-      - MONGODB_HOST=note-praticien-service_db
+      - MONGODB_HOST=note-praticien-service-db
       - MONGODB_PORT=27017
       - TZ=Europe/Paris
     depends_on:
-      note-praticien-service_db:
+      note-praticien-service-db:
         condition: service_healthy
     healthcheck:
       <<: *healthcheck-timings
