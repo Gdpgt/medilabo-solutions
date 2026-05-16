@@ -20,33 +20,45 @@
 
         <input th:if="${mode == 'edition'}" type="hidden" name="_method" value="PUT">
 
-        <label for="nom">Nom</label>
-        <input type="text" id="nom" th:field="*{nom}" required>
-        <small th:if="${#fields.hasErrors('nom')}" th:errors="*{nom}" style="color: var(--pico-color-red-500);">Erreur nom</small>
+        <label for="nom">Nom *</label>
+        <input type="text" id="nom" th:field="*{nom}"
+               th:attrappend="aria-invalid=${#fields.hasErrors('nom')} ? 'true'" required>
+        <small th:if="${#fields.hasErrors('nom')}" th:errors="*{nom}"
+               style="color: var(--pico-form-element-invalid-active-border-color);">Erreur nom</small>
 
-        <label for="prenom">Prénom</label>
-        <input type="text" id="prenom" th:field="*{prenom}" required>
-        <small th:if="${#fields.hasErrors('prenom')}" th:errors="*{prenom}" style="color: var(--pico-color-red-500);">Erreur prénom</small>
+        <label for="prenom">Prénom *</label>
+        <input type="text" id="prenom" th:field="*{prenom}"
+               th:attrappend="aria-invalid=${#fields.hasErrors('prenom')} ? 'true'" required>
+        <small th:if="${#fields.hasErrors('prenom')}" th:errors="*{prenom}"
+               style="color: var(--pico-form-element-invalid-active-border-color);">Erreur prénom</small>
 
-        <label for="dateNaissance">Date de naissance</label>
-        <input type="date" id="dateNaissance" th:field="*{dateNaissance}" required>
-        <small th:if="${#fields.hasErrors('dateNaissance')}" th:errors="*{dateNaissance}" style="color: var(--pico-color-red-500);">Erreur date</small>
+        <label for="dateNaissance">Date de naissance *</label>
+        <input type="date" id="dateNaissance" th:field="*{dateNaissance}"
+               th:attrappend="aria-invalid=${#fields.hasErrors('dateNaissance')} ? 'true'" required>
+        <small th:if="${#fields.hasErrors('dateNaissance')}" th:errors="*{dateNaissance}"
+               style="color: var(--pico-form-element-invalid-active-border-color);">Erreur date</small>
 
-        <label for="genre">Genre</label>
-        <select id="genre" th:field="*{genre}" required>
+        <label for="genre">Genre *</label>
+        <select id="genre" th:field="*{genre}"
+                th:attrappend="aria-invalid=${#fields.hasErrors('genre')} ? 'true'" required>
             <option value="">-- Sélectionner --</option>
             <option value="M">Masculin</option>
             <option value="F">Féminin</option>
         </select>
-        <small th:if="${#fields.hasErrors('genre')}" th:errors="*{genre}" style="color: var(--pico-color-red-500);">Erreur genre</small>
+        <small th:if="${#fields.hasErrors('genre')}" th:errors="*{genre}"
+               style="color: var(--pico-form-element-invalid-active-border-color);">Erreur genre</small>
 
         <label for="adresse">Adresse</label>
-        <input type="text" id="adresse" th:field="*{adresse}">
-        <small th:if="${#fields.hasErrors('adresse')}" th:errors="*{adresse}" style="color: var(--pico-color-red-500);">Erreur adresse</small>
+        <input type="text" id="adresse" th:field="*{adresse}"
+               th:attrappend="aria-invalid=${#fields.hasErrors('adresse')} ? 'true'">
+        <small th:if="${#fields.hasErrors('adresse')}" th:errors="*{adresse}"
+               style="color: var(--pico-form-element-invalid-active-border-color);">Erreur adresse</small>
 
         <label for="telephone">Téléphone</label>
-        <input type="text" id="telephone" th:field="*{telephone}">
-        <small th:if="${#fields.hasErrors('telephone')}" th:errors="*{telephone}" style="color: var(--pico-color-red-500);">Erreur téléphone</small>
+        <input type="text" id="telephone" th:field="*{telephone}"
+               th:attrappend="aria-invalid=${#fields.hasErrors('telephone')} ? 'true'">
+        <small th:if="${#fields.hasErrors('telephone')}" th:errors="*{telephone}"
+               style="color: var(--pico-form-element-invalid-active-border-color);">Erreur téléphone</small>
 
         <div role="group">
             <button type="submit">Enregistrer</button>
