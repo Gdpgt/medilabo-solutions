@@ -78,18 +78,18 @@ La spec définit pour les patients ≤ 30 ans uniquement les seuils DANGER (M : 
 
 ### Table récapitulative des seuils
 
-| Âge | Genre | Nb déclencheurs distincts | Niveau |
-|-----|-------|---------------------------|--------|
-| Tous | Tous | 0-1 | Aucun |
-| > 30 ans | Tous | 2-5 | Limite |
-| > 30 ans | Tous | 6-7 | Danger |
-| > 30 ans | Tous | ≥ 8 | Précoce |
-| ≤ 30 ans | M | 2 | Aucun *(hors spec)* |
-| ≤ 30 ans | M | 3-4 | Danger |
-| ≤ 30 ans | M | ≥ 5 | Précoce |
-| ≤ 30 ans | F | 2-3 | Aucun *(hors spec)* |
-| ≤ 30 ans | F | 4-6 | Danger |
-| ≤ 30 ans | F | ≥ 7 | Précoce |
+| Âge       | Genre | Nb déclencheurs distincts | Niveau |
+|-----------|-------|---------------------------|--------|
+| Tous      | Tous | 0-1 | Aucun |
+| \> 30 ans | Tous | 2-5 | Limite |
+| \> 30 ans  | Tous | 6-7 | Danger |
+| \> 30 ans  | Tous | ≥ 8 | Précoce |
+| ≤ 30 ans  | M | 2 | Aucun *(hors spec)* |
+| ≤ 30 ans  | M | 3-4 | Danger |
+| ≤ 30 ans  | M | ≥ 5 | Précoce |
+| ≤ 30 ans  | F | 2-3 | Aucun *(hors spec)* |
+| ≤ 30 ans  | F | 4-6 | Danger |
+| ≤ 30 ans  | F | ≥ 7 | Précoce |
 
 ### Stratégie de matching : normalisation + `contains()`
 
