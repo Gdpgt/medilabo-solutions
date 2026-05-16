@@ -6,11 +6,10 @@ import com.medilabosolutions.notepraticienservice.web.dto.NotePraticienDto;
 import com.medilabosolutions.notepraticienservice.web.mapper.NotePraticienMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -25,13 +24,7 @@ public class NotePraticienController {
     public ResponseEntity<NotePraticienDto> createNote(@Valid @RequestBody NotePraticienDto dto) {
         NotePraticien savedNote = notePraticienService.createNote(NotePraticienMapper.toEntity(dto));
 
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(savedNote.getId())
-                .toUri();
-
-        return ResponseEntity.created(location).body(NotePraticienMapper.toDto(savedNote));
+        return ResponseEntity.status(HttpStatus.CREATED).body(NotePraticienMapper.toDto(savedNote));
     }
 
 
