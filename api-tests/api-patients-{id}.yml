@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{patientHost}}/api/patients/5"
+  url: "{{patientHost}}/api/patients/4"
   auth:
     type: basic
     username: "{{username}}"

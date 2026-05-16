@@ -5,7 +5,7 @@ info:
 
 http:
   method: DELETE
-  url: "{{patientHost}}/api/patients/5"
+  url: "{{patientHost}}/api/patients/6"
   auth:
     type: basic
     username: "{{username}}"
