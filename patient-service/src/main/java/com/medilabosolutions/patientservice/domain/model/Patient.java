@@ -57,7 +57,7 @@ public class Patient {
     @Pattern(regexp = "^[a-zA-ZÀ-ÿŒœ0-9'’ ,./():+°-]*$", message = "L'adresse contient des caractères spéciaux non autorisés.")
     private String adresse;
 
-    @Pattern(regexp = "^\\d{3}-\\d{3}-\\d{4}$", message = "Le téléphone doit être au format 000-000-0000.")
+    @Pattern(regexp = "^(\\d{3}-\\d{3}-\\d{4})?$", message = "Le téléphone doit être au format 000-000-0000.")
     private String telephone;
 
 
