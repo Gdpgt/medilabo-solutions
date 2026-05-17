@@ -22,7 +22,8 @@ public class NotePraticienMapper {
                 note.getId(),
                 note.getIdPatient(),
                 note.getNomPatient(),
-                note.getNote()
+                note.getNote(),
+                note.getDateCreation()
         );
     }
 

@@ -80,7 +80,7 @@ public class FrontendController {
         PatientDetailView detail = patientDetailService.getPatientDetail(id);
 
         model.addAttribute("detail", detail);
-        model.addAttribute("nouvelleNote", new NotePraticienDto(null, id, detail.patient().nom(), ""));
+        model.addAttribute("nouvelleNote", new NotePraticienDto(null, id, detail.patient().nom(), "", null));
         return "patients/detail";
     }
 
@@ -128,7 +128,7 @@ public class FrontendController {
             return "patients/detail";
         }
 
-        NotePraticienDto patientNamed = new NotePraticienDto(null, id, dto.nomPatient(), dto.note());
+        NotePraticienDto patientNamed = new NotePraticienDto(null, id, dto.nomPatient(), dto.note(), null);
         notePraticienClient.createNote(patientNamed);
         return "redirect:/patients/" + id;
     }

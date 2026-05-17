@@ -88,6 +88,8 @@
             <ul th:unless="${#lists.isEmpty(detail.notes)}">
                 <li th:each="note : ${detail.notes}">
                     <p th:text="${note.note}">Contenu de la note</p>
+                    <small th:if="${note.dateCreation != null}"
+                           th:text="${#temporals.format(note.dateCreation.atZone(T(java.time.ZoneId).of('Europe/Paris')).toLocalDateTime(), 'dd/MM/yyyy à HH:mm')}">date</small>
                     <form th:action="@{/patients/{id}/notes/{noteId}(id=${detail.patient.id}, noteId=${note.id})}"
                           method="post">
                         <input type="hidden" name="_method" value="DELETE">
