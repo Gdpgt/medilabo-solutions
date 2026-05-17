@@ -55,7 +55,7 @@ public class FrontendController {
 
     @GetMapping("/patients/nouveau")
     public String formulaireCreation(Model model) {
-        model.addAttribute("patientDto", new PatientDto(null, null, null, null, null, null, null));
+        model.addAttribute("patientDto", PatientDto.vide());
         model.addAttribute("mode", "creation");
         return "patients/formulaire";
     }

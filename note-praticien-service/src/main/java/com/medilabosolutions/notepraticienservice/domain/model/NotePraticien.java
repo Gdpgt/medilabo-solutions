@@ -32,7 +32,7 @@ public class NotePraticien {
 
     @NotBlank(message = "Le nom du patient est obligatoire.")
     @Size(max = 50, message = "Le nom du patient ne doit pas dépasser 50 caractères.")
-    @Pattern(regexp = "^[a-zA-ZÀ-ÿ\\-' ]+$", message = "Le nom contient des caractères non autorisés.")
+    @Pattern(regexp = "^[a-zA-ZÀ-ÿ\\-'’ ]+$", message = "Le nom contient des caractères non autorisés.")
     private String nomPatient;
 
     @NotBlank(message = "La note est obligatoire.")

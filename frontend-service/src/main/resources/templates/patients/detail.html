@@ -105,7 +105,11 @@
                 <input type="hidden" th:field="*{idPatient}">
                 <input type="hidden" th:field="*{nomPatient}">
                 <label for="note">Contenu de la note</label>
-                <textarea id="note" th:field="*{note}" rows="4" required></textarea>
+                <textarea id="note" th:field="*{note}"
+                          th:attrappend="aria-invalid=${#fields.hasErrors('note')} ? 'true'"
+                          rows="4" required></textarea>
+                <small th:if="${#fields.hasErrors('note')}" th:errors="*{note}"
+                       style="color: var(--pico-form-element-invalid-active-border-color);">Erreur note</small>
                 <button type="submit">Ajouter la note</button>
             </form>
 

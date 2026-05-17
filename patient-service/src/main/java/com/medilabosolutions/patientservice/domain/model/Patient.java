@@ -35,13 +35,13 @@ public class Patient {
 
     @NotBlank(message = "Le nom est obligatoire.")
     @Size(max=50, message = "Le nom ne doit pas dépasser 50 caractères.")
-    @Pattern(regexp = "^[a-zA-ZÀ-ÿ\\-' ]+$", message = "Le nom contient des caractères non autorisés.")
+    @Pattern(regexp = "^[a-zA-ZÀ-ÿ\\-'’ ]+$", message = "Le nom contient des caractères non autorisés.")
     @ToString.Include
     private String nom;
 
     @NotBlank(message = "Le prénom est obligatoire.")
     @Size(max=50, message = "Le prénom ne doit pas dépasser 50 caractères.")
-    @Pattern(regexp = "^[a-zA-ZÀ-ÿ\\-' ]+$", message = "Le prénom contient des caractères non autorisés.")
+    @Pattern(regexp = "^[a-zA-ZÀ-ÿ\\-'’ ]+$", message = "Le prénom contient des caractères non autorisés.")
     @ToString.Include
     private String prenom;
 

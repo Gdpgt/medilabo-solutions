@@ -13,12 +13,12 @@ public record PatientDto(
 
         @NotBlank(message = "Le nom est obligatoire.")
         @Size(max = 50, message = "Le nom ne doit pas dépasser 50 caractères.")
-        @Pattern(regexp = "^[a-zA-ZÀ-ÿ\\-' ]+$", message = "Le nom contient des caractères non autorisés.")
+        @Pattern(regexp = "^[a-zA-ZÀ-ÿ\\-'’ ]+$", message = "Le nom contient des caractères non autorisés.")
         String nom,
 
         @NotBlank(message = "Le prénom est obligatoire.")
         @Size(max = 50, message = "Le prénom ne doit pas dépasser 50 caractères.")
-        @Pattern(regexp = "^[a-zA-ZÀ-ÿ\\-' ]+$", message = "Le prénom contient des caractères non autorisés.")
+        @Pattern(regexp = "^[a-zA-ZÀ-ÿ\\-'’ ]+$", message = "Le prénom contient des caractères non autorisés.")
         String prenom,
 
         @Past(message = "La date de naissance ne peut pas être dans le futur.")
